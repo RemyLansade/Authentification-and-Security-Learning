@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const ejs        = require('ejs');
 const express    = require('express');
+const mongoose   = require('mongoose');
 
 const app = express();
 
@@ -9,6 +10,10 @@ const login    = require('./routes/login');
 const register = require('./routes/register');
 
 require('dotenv').config()
+
+
+//Mongoose
+mongoose.connect('mongodb://localhost:27017/userDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 
 // Middleware
@@ -28,7 +33,7 @@ app.use('/register', register);
 
 
 // Server port
-const port = process.env.APP_PORT !== undefined ? 3000 : process.env.APP_PORT;
+const port = process.env.APP_PORT === undefined ? 3000 : process.env.APP_PORT;
 
 app.listen(port, () => {
     console.log(`Server listening on port: ${port}`);
