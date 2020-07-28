@@ -1,5 +1,4 @@
 const bodyParser = require('body-parser');
-const ejs        = require('ejs');
 const express    = require('express');
 const mongoose   = require('mongoose');
 
@@ -9,11 +8,17 @@ const home     = require('./routes/home');
 const login    = require('./routes/login');
 const register = require('./routes/register');
 
-require('dotenv').config()
+
+// Environment variable
+require('dotenv').config();
+const appPort = process.env.APP_PORT;
+const dbName = process.env.DB_NAME;
+const dbPort = process.env.DB_PORT;
+const dbHost = process.env.DB_HOST;
 
 
 //Mongoose
-mongoose.connect(`mongodb://${process.env.DB_PORT}/${process.env.DB_NAME}`, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`, {useNewUrlParser: true, useUnifiedTopology: true});
 
 
 // Middleware
@@ -33,7 +38,7 @@ app.use('/register', register);
 
 
 // Server port
-const port = process.env.APP_PORT === undefined ? 3000 : process.env.APP_PORT;
+const port = appPort === undefined ? 3000 : appPort;
 
 app.listen(port, () => {
     console.log(`Server listening on port: ${port}`);

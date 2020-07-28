@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const md5 = require('md5');
+
 const User = require('../database/model/userSchema');
 
 router.get('/', (req, res) => {
@@ -8,7 +10,8 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const {username, password} = req.body;
+    const username = req.body.username;
+    const password = md5(req.body.password);
 
     User.findOne({email: username}, (err, result) => {
         if(err) {
