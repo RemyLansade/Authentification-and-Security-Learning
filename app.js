@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express    = require('express');
 const mongoose   = require('mongoose');
+const session    = require('express-session');
 
 const app = express();
 
@@ -24,6 +25,12 @@ mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`, {useNewUrlParser: tr
 // Middleware
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(session({
+    secret: 'My little secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }
+}));
 
 
 // View engine

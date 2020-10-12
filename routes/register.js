@@ -13,8 +13,8 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const username = req.body.username;
     const password = req.body.password;
+    const username = req.body.username;
     bcrypt.hash(password, saltRounds, function(err, hash) {
         if(!err){
             const newUser = new User({

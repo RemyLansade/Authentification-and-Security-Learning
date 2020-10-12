@@ -11,16 +11,21 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const username = req.body.username;
     const password = req.body.password;
-    User.findOne({email: username}, (err, user) => {
+    const username = req.body.username;
+    User.findOne({email: username}, (err, foundUser) => {
         if(!err) {
-            if(user){
-                bcrypt.compare(password, user.password, (error, result) => {
-                    if(result){
-                        res.render('secrets');
+            if(foundUser){
+                bcrypt.compare(password, foundUser.password, (error, result) => {
+                    if (!error){
+                        if(result){
+                            res.render('secrets');
+                        } else {
+                            res.send("Identifiants incorrects")
+                        }
                     } else {
-                        res.send("Identifiants incorrects")
+                        console.error(error.message);
+                        res.send(error.message);
                     }
                 });
             } else {
