@@ -1,27 +1,27 @@
+require('dotenv').config();
 const bodyParser            = require('body-parser');
 const express               = require('express');
 const mongoose              = require('mongoose');
 const session               = require('express-session');
 const passport              = require('passport');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const app = express();
 
 const home     = require('./routes/home');
 const login    = require('./routes/login');
+const logout   = require('./routes/logout');
 const register = require('./routes/register');
+const secrets  = require('./routes/secrets');
 
 
 // Environment variable
-require('dotenv').config();
-const appPort = process.env.APP_PORT;
 const dbName = process.env.DB_NAME;
 const dbPort = process.env.DB_PORT;
 const dbHost = process.env.DB_HOST;
 
 
 //Mongoose
-mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`, {useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true});
 
 
 // Middleware
@@ -30,25 +30,27 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
     secret: 'My little secret',
     resave: false,
-    saveUninitialized: false,
-    cookie: { secure: true }
+    saveUninitialized: false
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 // View engine
+app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'ejs');
-app.set('views', './views');
+app.set('views', __dirname + '/views');
 
 
 // Roots
 app.use('/', home);
 app.use('/login', login);
+app.use('/logout', logout);
 app.use('/register', register);
+app.use('/secrets', secrets);
 
 
 // Server port
-const port = appPort === undefined ? 3000 : appPort;
-
-app.listen(port, () => {
-    console.log(`Server listening on port: ${port}`);
+app.listen(app.get('port'), () => {
+    console.log("Server listening on port: " + app.get('port'));
 });

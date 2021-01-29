@@ -1,11 +1,8 @@
-const express = require('express');
-const router = express.Router();
+const express  = require('express');
+const passport = require('passport');
+const router   = express.Router();
 
-// const md5 = require('md5');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-
-const User = require('../database/model/user.model');
+const User     = require('../database/model/user.model');
 
 
 router.get('/', (req, res) => {
@@ -13,27 +10,20 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const password = req.body.password;
-    const username = req.body.username;
-    bcrypt.hash(password, saltRounds, function(err, hash) {
-        if(!err){
-            const newUser = new User({
-                email: username,
-                password: hash
-            });
-        
-            newUser.save((err) => {
-                if(err) {
-                    console.log(err);
-                    res.sendStatus(500);
-                } else {
-                    res.render('secrets');
-                }
-            });
+    User.register({username: req.body.username}, req.body.password, (err, user) => {
+        if (err){
+            if(err.message === 'A user with the given username is already registered'){
+                res.redirect('/login');
+            } else {
+                console.log(err)
+                res.sendStatus('500');
+            }
         } else {
-            res.sendStatus(400);
+            passport.authenticate('local')(req, res, () => {
+                res.redirect('/secrets');
+            });
         }
-    });    
+    });
 });
 
 module.exports = router;
