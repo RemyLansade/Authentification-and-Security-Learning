@@ -17,8 +17,8 @@ router.post('/', (req, res) => {
 
     req.logIn(user, (err) => {
         if(err){
-            console.log(err)
-            res.sendStatus('500');
+            console.log(err);
+            res.sendStatus(500);
         } else {
             passport.authenticate('local')(req, res, () => {
                 res.redirect('/secrets');
